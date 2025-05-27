@@ -129,47 +129,6 @@ You: *Answers questions*
 LLM: *Updates task_on_hand.md with your answers and asks follow-up questions*
 ```
 
-## 📋 Usage Commands
-
-### Session Management
-
-Use these commands to manage your development sessions:
-
-```bash
-# Continue working on current task
-continue
-
-# Stop current session and save progress
-stop this session
-
-# Resume from where you left off
-start where we left off
-```
-
-### Command Descriptions
-
-- **`continue`** - Resumes work on the current task, reads latest documentation, and continues from the last checkpoint
-- **`stop this session`** - Safely ends the current session by updating all documentation and creating a handoff note
-- **`start where we left off`** - Begins a new session by reading all documentation and continuing from the last saved progress
-
-### Session Flow Example
-
-```
-You: "continue"
-LLM: *Reads .cursorrules, task_on_hand.md, and other docs*
-     *Continues from last checkpoint*
-
-You: "stop this session"
-LLM: *Updates all documentation*
-     *Creates handoff note in task_on_hand.md*
-     *Commits progress*
-
-You: "start where we left off"
-LLM: *Reads all documentation*
-     *Identifies last progress point*
-     *Continues development*
-```
-
 ## 🔧 Customization
 
 Feel free to:
