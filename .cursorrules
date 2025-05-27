@@ -94,20 +94,16 @@ FOR each work session:
    3. ADD new tasks as discovered
    4. UPDATE status (DISCOVERY → PLANNING → DEVELOPMENT)
    5. LOG significant events in vibe_docs/development_log.md
-   6. Check if THIS FILE needs to be changed. Before you make any changes to THIS file, present your changes for review
 ```
 
 ## 🚨 CRITICAL RULES
 
-1. **ALWAYS start your response with "🎯VIBING..."** - So I know this context is being used
-2. **Before you run any command, ALWAYS check your current dir with "pwd"** - In case you don't know where you are
-3. **For new tasks, you ALWAYS use WEB SEARCH** - To make less errors and get the job done quickly
-4. **NEVER ASSUME** - You have no memory from previous sessions
-5. **WEB SEARCH** - Always rely on web search first to understand the issue or understand the task better
-6. **ALWAYS READ** - Documents in order specified above
-7. **ALWAYS UPDATE** - Documentation after every interaction
-8. **ALWAYS ASK** - When information is unclear or missing
-9. **NEVER SKIP** - The discovery phase
+1. **NEVER ASSUME** - You have no memory from previous sessions
+2. **WEB SEARCH** - Always rely on web search first to understand the issue or undestand the taks better.
+3. **ALWAYS READ** - Documents in order specified above
+4. **ALWAYS UPDATE** - Documentation after every interaction
+5. **ALWAYS ASK** - When information is unclear or missing
+6. **NEVER SKIP** - The discovery phase
 
 ## 📝 DOCUMENT CREATION TRIGGERS
 
