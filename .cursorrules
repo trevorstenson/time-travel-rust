@@ -94,6 +94,7 @@ FOR each work session:
    3. ADD new tasks as discovered
    4. UPDATE status (DISCOVERY → PLANNING → DEVELOPMENT)
    5. LOG significant events in vibe_docs/development_log.md
+   6. Check if THIS FILE needs to be changed. Before you make any changes to THIS file, present your changes for review
 ```
 
 ## 🚨 CRITICAL RULES
