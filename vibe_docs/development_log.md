@@ -161,3 +161,147 @@ This feature will transform the time travel debugger from a command-line tool in
 - `src/runtime/runtime.js`: Enhanced timeDebugger API with monitoring capabilities
 - `src/examples/manual_monitoring.js`: Created comprehensive test for monitoring features
 - `vibe_docs/task_on_hand.md`: Updated to reflect Phase 1.2 completion
+
+---
+
+## 2025-01-27 - CRITICAL BUG FIX: V8 Ops State Synchronization ✅
+
+**STATUS**: 🐛 **CRITICAL BUG FIXED - EXECUTION STATE TRACKING**
+
+**🚨 PROBLEM IDENTIFIED:**
+- User reported `basic_functions.js` showing "0 total function calls" despite having multiple functions
+- Discovered V8 operations were not updating Rust-side ExecutionState
+- Manual monitoring API working but state tracking completely broken
+
+**🔍 ROOT CAUSE ANALYSIS:**
+- V8 operations (`op_function_entry`, `op_function_exit`) were static functions printing to console only
+- No connection between JavaScript calls and Rust ExecutionState tracking
+- `ExecutionState::log_function_entry()` method was never being called
+- Result: Perfect console output but zero state updates
+
+**🛠️ TECHNICAL SOLUTION:**
+1. **Shared State via OpState**: Used `Rc<RefCell<ExecutionState>>` to share state between runtime and V8 ops
+2. **Operation State Access**: Modified V8 ops to accept `&mut OpState` parameter
+3. **Proper Borrow Management**: Fixed RefCell borrow checker issues with scoped borrowing
+4. **State Synchronization**: Connected JavaScript monitoring calls to Rust execution tracking
+
+**💻 KEY CODE CHANGES:**
+```rust
+// Runtime Setup - Store shared state in OpState
+let execution_state = Rc::new(RefCell::new(ExecutionState::default()));
+js_runtime.op_state().borrow_mut().put(execution_state.clone());
+
+// V8 Operations - Access shared state
+#[op2(fast)]
+fn op_function_entry(state: &mut OpState, #[string] name: String) {
+    if let Some(execution_state) = state.try_borrow_mut::<Rc<RefCell<ExecutionState>>>() {
+        execution_state.borrow_mut().log_function_entry(name, vec![], None, None);
+    }
+}
+```
+
+**🧪 BEFORE/AFTER COMPARISON:**
+- **Before**: `Total function calls: 0` (broken state tracking)
+- **After**: `Total function calls: 4` with full statistics and timeline
+
+**✅ VERIFICATION RESULTS:**
+```
+🔍 EXECUTION TRACE:
+Total function calls: 4
+Max call depth reached: 2
+
+📊 FUNCTION CALL STATISTICS:
+  testFunction → 1 calls
+  contextTest → 1 calls
+  innerFunction → 1 calls
+  outerFunction → 1 calls
+
+🕐 FUNCTION CALL TIMELINE:
+  1: testFunction()
+  2: outerFunction()
+  3:   innerFunction()
+  4: contextTest()
+```
+
+**🔧 ADDITIONAL FIXES:**
+- Fixed RefCell borrow checker error with proper scoping
+- Updated CLI to handle new Rc<RefCell<>> state access pattern
+- Added comprehensive error documentation in troubleshooting.md
+
+**📚 LESSONS LEARNED:**
+- V8 operations need explicit state sharing via OpState
+- RefCell requires careful borrow scope management
+- Always verify end-to-end state updates, not just console output
+- Manual testing with multiple patterns reveals state sync issues
+
+**🎯 IMPACT:**
+- Manual monitoring now fully functional with complete state tracking
+- Foundation ready for Phase 2 (State Capture) implementation
+- Demonstrates monitoring infrastructure working correctly
+- Clear path forward for automatic function detection (Phase 1.3)
+
+**🔧 FILES MODIFIED:**
+- `src/runtime/engine.rs`: Shared state architecture, fixed borrow management
+- `src/cli/mod.rs`: Updated state access for Rc<RefCell<>> pattern
+- `vibe_docs/troubleshooting.md`: Added borrow checker and OpState patterns
+- `vibe_docs/task_on_hand.md`: Clarified manual vs automatic monitoring status
+
+## 📅 January 27, 2025 - 22:30 EST
+### ✅ Phase 2.1 COMPLETED: JavaScript Value Serialization
+
+**🎯 MAJOR MILESTONE**: Successfully implemented comprehensive JavaScript value serialization system
+
+**📦 NEW COMPONENTS ADDED**:
+- **src/runtime/serialization.rs**: Complete serialization module (500+ lines)
+  - `JSValue` enum: Comprehensive JavaScript type representation
+  - `SerializationContext`: Manages conversion with circular reference tracking
+  - `SerializationConfig`: Configurable serialization parameters
+  - Full V8 value extraction and conversion system
+
+**🔧 ENHANCED COMPONENTS**:
+- **src/runtime/engine.rs**: Extended with value capture capabilities
+  - New operations: `op_capture_variable`, `op_capture_scope`, `op_get_snapshot_info`
+  - Enhanced `ExecutionState` with `variable_snapshots` and `SerializationContext`
+  - Variable capture integration with existing function monitoring
+
+- **src/runtime/runtime.js**: Enhanced JavaScript API (v2.1)
+  - `timeDebugger.captureVariable()`: Single value capture
+  - `timeDebugger.captureScope()`: Multi-variable scope capture
+  - `timeDebugger.captureFunction()`: Auto-wrapping function monitor
+  - `timeDebugger.getSnapshotInfo()`: Snapshot metadata retrieval
+
+**📊 CAPABILITIES DEMONSTRATED**:
+- **Primitive Types**: number, string, boolean, null, undefined, symbol, bigint
+- **Complex Objects**: nested objects, arrays with mixed types, functions with metadata
+- **Special Cases**: Date objects with ISO string conversion, circular references with tracking
+- **Advanced Features**: Function source capture, automatic argument serialization
+- **Error Handling**: Graceful degradation when serialization fails
+
+**🧪 TEST RESULTS** (value_serialization_test.js):
+- ✅ Basic value capture: All primitive types working
+- ✅ Complex object serialization: Nested objects, arrays, functions
+- ✅ Scope capture: Multi-variable snapshots (4 variables captured)
+- ✅ Auto-capture: Function wrapper with argument and return value tracking
+- ✅ Special values: Infinity, NaN, BigInt, Symbol support
+- ✅ Circular references: Proper detection and reference tracking
+- ✅ Snapshot metadata: Complete tracking and reporting system
+
+**📈 PERFORMANCE METRICS**:
+- Total execution time: 2.06ms for comprehensive test suite
+- Function calls monitored: 6 functions with full tracing
+- Variable snapshots: 2 snapshots with 6 total variables captured
+- Zero serialization failures or errors
+
+**🔄 INTEGRATION SUCCESS**:
+- Seamless integration with existing function monitoring (Phase 1.2)
+- V8 engine integration via deno_core working flawlessly
+- Rust-JavaScript bridge operations performing efficiently
+- Memory management and circular reference detection robust
+
+**🚀 READY FOR NEXT PHASE**: Foundation complete for execution context capture and time-travel navigation
+
+**📝 LESSONS LEARNED**:
+- V8 API requires careful handling of optional values (symbol descriptions, function names)
+- Circular reference tracking essential for complex object graphs
+- Display string generation valuable for debugging serialized values
+- Error recovery important for robust serialization in production

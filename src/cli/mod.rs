@@ -89,9 +89,10 @@ impl DebuggerCli {
             Ok(()) => {
                 if self.config.verbose {
                     let state = runtime.get_execution_state();
+                    let state_ref = state.borrow();
                     println!("📊 Execution Statistics:");
-                    println!("   - Function calls: {}", state.function_calls);
-                    println!("   - Total time: {:?}", state.total_execution_time);
+                    println!("   - Function calls: {}", state_ref.function_calls);
+                    println!("   - Total time: {:?}", state_ref.total_execution_time);
                 }
                 println!("✅ Execution completed successfully");
                 Ok(())

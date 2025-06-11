@@ -156,4 +156,60 @@ This op is fast-compatible and should be marked as (fast)
 3. Check parameter types to determine appropriate annotation
 
 **Prevention:** Review parameter types when creating new operations and choose appropriate op2 annotation
+**Related Files:** `src/runtime/engine.rs`
+
+---
+
+### Borrow Checker Error - Already Borrowed (RefCell)
+**Date:** 2025-01-27
+**Error Message:**
+```
+thread 'main' panicked at src/runtime/engine.rs:195:34:
+already borrowed: BorrowMutError
+```
+
+**Context:** Implementing shared execution state between V8 ops and Rust runtime using Rc<RefCell<ExecutionState>>
+**Root Cause:** Multiple borrows of the same RefCell - first an immutable borrow to read execution_start_time, then immediately a mutable borrow to set total_execution_time
+**Solution:**
+1. Scope the borrows properly to avoid overlapping
+2. **Fixed code:**
+```rust
+// Update execution statistics
+{
+    let mut execution_state = self.execution_state.borrow_mut();
+    if let Some(start_time) = execution_state.execution_start_time {
+        execution_state.total_execution_time = start_time.elapsed();
+    }
+}
+```
+3. Use block scoping `{}` to ensure borrow is dropped before next operation
+
+**Prevention:** When using RefCell, be careful about borrow scope and avoid overlapping borrows. Use explicit scoping blocks when needed.
+**Related Files:** `src/runtime/engine.rs`
+
+---
+
+### V8 Operations State Access Pattern
+**Date:** 2025-01-27
+**Context:** Need to share ExecutionState between V8 operations and Rust runtime
+**Root Cause:** V8 operations are static functions that don't have direct access to runtime instance state
+**Solution:**
+1. Use `OpState` to share data between operations and runtime
+2. Store shared state in `Rc<RefCell<T>>` for interior mutability
+3. **Pattern:**
+```rust
+// In runtime setup
+let execution_state = Rc::new(RefCell::new(ExecutionState::default()));
+js_runtime.op_state().borrow_mut().put(execution_state.clone());
+
+// In V8 operations
+#[op2(fast)]
+fn op_function_entry(state: &mut OpState, #[string] name: String) {
+    if let Some(execution_state) = state.try_borrow_mut::<Rc<RefCell<ExecutionState>>>() {
+        execution_state.borrow_mut().log_function_entry(name, vec![], None, None);
+    }
+}
+```
+
+**Prevention:** Use OpState pattern for sharing complex state between V8 operations and runtime
 **Related Files:** `src/runtime/engine.rs` 
