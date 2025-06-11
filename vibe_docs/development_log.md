@@ -71,6 +71,46 @@ _Append-only log of decisions, changes, and progress. Never modify past entries.
 - ✅ Execution statistics tracking (execution time)
 **Next**: Begin Phase 1.2 - Basic Execution Monitoring with V8 hooks implementation
 
+## 2025-01-27 - New Core Goal: Terminal-Based Visual Debugger 🎯
+
+**STATUS**: 📋 **NEW FEATURE GOAL ADDED - TERMINAL VISUALIZER**
+
+**🎯 NEW CORE GOAL IDENTIFIED:**
+- Terminal-based visual debugger with TUI interface
+- Real-time source code display with execution pointer
+- Professional debugger experience in terminal environment
+- Interactive timeline navigation with visual feedback
+
+**🔧 TECHNICAL VISION:**
+- **TUI Framework**: Plan to use `ratatui` + `crossterm` for rich terminal interface
+- **Source Display**: Syntax-highlighted JavaScript source with line numbers
+- **Execution Pointer**: ASCII arrow (`-->`) showing current paused line
+- **State Panels**: Real-time display of call stack, variables, timing metrics
+- **Timeline Navigation**: Visual progress bar with step-by-step execution control
+
+**📺 USER EXPERIENCE GOALS:**
+- Mimic professional debugger interfaces (like GDB, VS Code debugger)
+- Allow stepping forward/backward through execution timeline
+- Show execution state at any point in time
+- Interactive controls for debugging workflow
+- Performance metrics and call statistics in sidebar
+
+**🗺️ INTEGRATION WITH CURRENT ARCHITECTURE:**
+- Builds on Phase 1.2 execution monitoring infrastructure
+- Will require enhanced state capture from Phase 2
+- Fits perfectly with time navigation from Phase 3
+- Represents major milestone for Phase 5.2
+
+**📋 ADDED TO PROJECT PLAN:**
+- Updated `task_on_hand.md` with detailed Phase 5.2 specification
+- Added technical architecture details to `technical_details.md`
+- Included example TUI layout and component breakdown
+
+**💭 STRATEGIC IMPACT:**
+This feature will transform the time travel debugger from a command-line tool into a professional debugging experience, making it much more useful for actual development work and significantly enhancing the learning value of the project.
+
+---
+
 ## 2025-01-27 - Phase 1.2 Completion: Basic Execution Monitoring ✅
 
 **STATUS**: ✅ **PHASE 1.2 COMPLETED - BASIC EXECUTION MONITORING**

@@ -290,3 +290,67 @@ main();
 - **Function Call Mechanics**: Call/return handling
 - **Async Execution**: Promises, async/await debugging
 - **Error Handling**: Exception propagation tracking
+
+### Terminal Visualizer Architecture (Future)
+
+#### TUI Framework Selection
+- **ratatui**: Modern Rust TUI framework for rich terminal interfaces
+- **crossterm**: Cross-platform terminal manipulation
+- **syntect**: Syntax highlighting for source code display
+- **unicode-width**: Proper text width calculation for layout
+
+#### Visualizer Components
+```
+┌─ TUI Application ─────────────────────────────────────────┐
+│ ┌─ Layout Manager ─────┬─ Source Display ─────────────────┐ │
+│ │                      │ - Syntax highlighting           │ │
+│ │ ┌─ State Panel ─────┐│ - Line numbers                  │ │
+│ │ │ - Call Stack      ││ - Execution pointer (arrow)     │ │
+│ │ │ - Variables       ││ - Scroll support                │ │
+│ │ │ - Timing Info     │└─────────────────────────────────┘ │
+│ │ └───────────────────┘                                   │
+│ │ ┌─ Timeline ────────┐┌─ Controls ──────────────────────┐ │
+│ │ │ - Progress bar    ││ - Step forward/back             │ │
+│ │ │ - Current step    ││ - Jump to line                  │ │
+│ │ │ - Total steps     ││ - Set breakpoints               │ │
+│ │ └───────────────────┘└─────────────────────────────────┘ │
+│ └───────────────────────────────────────────────────────┘ │
+└───────────────────────────────────────────────────────────┘
+```
+
+#### Source Code Mapping
+```rust
+#[derive(Debug, Clone)]
+pub struct SourceMapping {
+    pub file_path: String,
+    pub content: String,
+    pub lines: Vec<String>,
+    pub line_to_execution_point: HashMap<usize, ExecutionPoint>,
+}
+
+#[derive(Debug, Clone)]
+pub struct ExecutionPoint {
+    pub snapshot_id: SnapshotId,
+    pub function_name: String,
+    pub timestamp: f64,
+    pub call_depth: usize,
+}
+```
+
+#### TUI State Management
+```rust
+pub struct DebuggerTUI {
+    pub current_snapshot: Option<SnapshotId>,
+    pub source_mapping: SourceMapping,
+    pub viewport: SourceViewport,
+    pub timeline_position: usize,
+    pub execution_history: Vec<ExecutionSnapshot>,
+}
+
+pub struct SourceViewport {
+    pub start_line: usize,
+    pub end_line: usize,
+    pub current_line: usize,
+    pub arrow_position: (u16, u16),
+}
+```

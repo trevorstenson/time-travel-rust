@@ -180,6 +180,40 @@ A toy implementation of a time-travel debugger for JavaScript to learn how these
 - [ ] Add variable inspection commands
 - [ ] Create execution timeline visualization
 
+#### 5.2 Terminal-Based Visual Debugger (NEW CORE GOAL)
+- [ ] Implement TUI (Terminal User Interface) for visual debugging
+- [ ] Display source code in terminal with syntax highlighting
+- [ ] Show ASCII arrow pointing to current execution line
+- [ ] Real-time execution state display (call stack, variables, timing)
+- [ ] Navigate through execution timeline with visual feedback
+- [ ] Mimic professional debugger experience in terminal
+- [ ] Support stepping through code (forward/backward in time)
+- [ ] Show execution statistics and performance metrics in sidebar
+
+**🎯 VISUALIZER GOALS:**
+- **Source Code Display**: Show the actual JavaScript source with line numbers
+- **Execution Pointer**: ASCII arrow (`-->`) indicating current paused line
+- **State Panel**: Display current variables, call stack, and execution context
+- **Timeline Navigation**: Visual representation of execution history
+- **Interactive Controls**: Step forward/back, jump to specific points, set breakpoints
+- **Performance Metrics**: Real-time display of function timing and call counts
+
+**📺 EXAMPLE VISUALIZER LAYOUT:**
+```
+┌─ Source Code ─────────────────────────────┬─ Execution State ─────────┐
+│  15 | function calculateFactorial(n) {     │ Call Stack:                │
+│  16 |     if (n <= 1) {                   │ └─ main()                  │
+│→ 17 |         return 1;                   │ └─ calculateFactorial(3)   │
+│  18 |     }                               │                            │
+│  19 |     return n * calculateFactorial(  │ Variables:                 │
+│  20 | }                                   │ n: 1                       │
+│                                          │ result: undefined          │
+├─ Timeline ───────────────────────────────┤                            │
+│ [●●●●●○○○○○] Step 5/10                   │ Timing:                    │
+│ ← Step Back    Step Forward →           │ Function: 0.023ms          │
+└─────────────────────────────────────────┴────────────────────────────┘
+```
+
 ### Phase 6: Performance and Advanced Features (FUTURE)
 - [ ] Performance optimization
 - [ ] Advanced debugging features
